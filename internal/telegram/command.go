@@ -8,10 +8,8 @@ import (
 )
 
 const (
-	unknownCommandMessage = "Неизвестная команда"
-
 	authCommand = "auth"
-	newCommand = "new"
+	newCommand  = "new"
 )
 
 func (b *Bot) handleCommand(command *tgbotapi.Message) error {
@@ -23,7 +21,7 @@ func (b *Bot) handleCommand(command *tgbotapi.Message) error {
 	case newCommand:
 		return b.handleCommandNew(command)
 	default:
-		unknownCommandMessage := tgbotapi.NewMessage(command.Chat.ID, unknownCommandMessage)
+		unknownCommandMessage := tgbotapi.NewMessage(command.Chat.ID, predefinedMessages.UnknownCommand)
 		_, err := b.bot.Send(unknownCommandMessage)
 		return err
 	}
