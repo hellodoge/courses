@@ -1,0 +1,6 @@
+
+db:
+  username: "root"
+  host: "localhost"
+  port: 3308
+  dbname: "courses"
