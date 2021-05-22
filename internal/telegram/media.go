@@ -16,3 +16,11 @@ func (b *Bot) handlePhoto(chatID int64, messageID int, photos *[]tgbotapi.PhotoS
 	}
 	return b.ReplyWithText(chatID, messageID, message)
 }
+
+func (b *Bot) handleVideo(chatID int64, messageID int, video *tgbotapi.Video) error {
+	ok, err := b.service.Telegram.UserIsModerator(chatID)
+	if err != nil || !ok {
+		return err
+	}
+	return b.ReplyWithText(chatID, messageID, video.FileID)
+}
