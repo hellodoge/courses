@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	authCommand = "auth"
-	newCommand  = "new"
+	authCommand         = "auth"
+	newCommand          = "new"
+	addModeratorCommand = "moder"
 )
 
 func (b *Bot) handleCommand(command *tgbotapi.Message) error {
@@ -20,6 +21,8 @@ func (b *Bot) handleCommand(command *tgbotapi.Message) error {
 		return b.handleCommandAuth(command)
 	case newCommand:
 		return b.handleCommandNew(command)
+	case addModeratorCommand:
+		return b.handleCommandAddModerator(command)
 	default:
 		unknownCommandMessage := tgbotapi.NewMessage(command.Chat.ID, predefinedMessages.UnknownCommand)
 		_, err := b.bot.Send(unknownCommandMessage)
@@ -60,4 +63,22 @@ func (b *Bot) handleCommandNew(command *tgbotapi.Message) error {
 	message := tgbotapi.NewMessage(command.Chat.ID, command.CommandArguments()) //TODO
 	_, err = b.bot.Send(message)
 	return err
+}
+
+func (b *Bot) handleCommandAddModerator(command *tgbotapi.Message) error {
+	isModerator, err := b.service.Telegram.UserIsAdmin(command.Chat.ID)
+	if err != nil {
+		return err
+	}
+
+	if !isModerator {
+		return b.SendText(command.Chat.ID, predefinedMessages.NotAnAdministrator)
+	}
+
+	token, err := b.service.NewModerator(command.CommandArguments())
+	if err != nil {
+		return err
+	}
+
+	return b.ReplyWithText(command.Chat.ID, command.MessageID, token)
 }
