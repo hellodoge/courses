@@ -9,10 +9,13 @@ func (b *Bot) handleUpdate(update tgbotapi.Update) error {
 		return nil
 	}
 
+	if update.Message.Photo != nil {
+		return b.handlePhoto(update.Message.Chat.ID, update.Message.MessageID, update.Message.Photo)
+	}
+
 	if update.Message.IsCommand() {
 		return b.handleCommand(update.Message)
 	}
 
 	return b.handleMessage(update.Message)
 }
-
