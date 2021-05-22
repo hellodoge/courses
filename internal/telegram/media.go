@@ -24,3 +24,11 @@ func (b *Bot) handleVideo(chatID int64, messageID int, video *tgbotapi.Video) er
 	}
 	return b.ReplyWithText(chatID, messageID, video.FileID)
 }
+
+func (b *Bot) handleDocument(chatID int64, messageID int, document *tgbotapi.Document) error {
+	ok, err := b.service.Telegram.UserIsModerator(chatID)
+	if err != nil || !ok {
+		return err
+	}
+	return b.ReplyWithText(chatID, messageID, document.FileID)
+}
