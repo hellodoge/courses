@@ -1,3 +1,2 @@
-UPDATE tg_users
-SET token = ?
-where id = ?;
+REPLACE INTO tg_users (id, token)
+VALUES (?, ?);

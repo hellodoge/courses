@@ -35,7 +35,7 @@ func (r *TgAuthMySQL) SetUserToken(chatID int64, token string) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.db.Exec(setTokenQuery, token, chatID)
+	_, err = r.db.Exec(setTokenQuery, chatID, token)
 	return err
 }
 
