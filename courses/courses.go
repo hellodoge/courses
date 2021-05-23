@@ -2,7 +2,7 @@ package courses
 
 type Course struct {
 	ID          string   `json:"id"`
-	Title       string   `json:"title"`
+	Title       string   `json:"title" binding:"required"`
 	Description string   `json:"description,omitempty"`
 	Lessons     []Lesson `json:"lessons"`
 }
