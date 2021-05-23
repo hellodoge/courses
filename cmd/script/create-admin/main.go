@@ -7,6 +7,7 @@ import (
 	"github.com/hellodoge/courses-tg-bot/internal/service"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"os"
 	"strings"
@@ -23,7 +24,7 @@ func main() {
 		log.Fatalln("error while connecting to database:", err)
 	}
 
-	repo := repository.NewRepository(db)
+	repo := repository.NewRepository(db, &mongo.Client{})
 	services := service.NewService(repo)
 
 	description := strings.Join(os.Args[1:], " ")

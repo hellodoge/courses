@@ -7,6 +7,7 @@ import (
 	"github.com/hellodoge/courses-tg-bot/internal/service"
 	"github.com/hellodoge/courses-tg-bot/internal/telegram"
 	"github.com/hellodoge/courses-tg-bot/pkg/database"
+	"github.com/hellodoge/courses-tg-bot/pkg/mdb"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -35,7 +36,12 @@ func main() {
 		logrus.Fatal("error while connecting to db: ", err)
 	}
 
-	repo := repository.NewRepository(db)
+	client, err := mdb.Connect(os.Getenv("MONGODB_URI"))
+	if err != nil {
+		logrus.Fatalln("error while connecting to mongo db:", err)
+	}
+
+	repo := repository.NewRepository(db, client)
 	services := service.NewService(repo)
 
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TG_BOT_TOKEN"))
