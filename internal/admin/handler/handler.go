@@ -21,6 +21,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		roles := api.Group("/roles")
 		h.initRolesRoutes(roles)
+
+		course := api.Group("/courses")
+		h.initCoursesRoutes(course)
 	}
 	return router
 }

@@ -21,3 +21,19 @@ func (h *Handler) userIsAdmin(ctx *gin.Context) bool {
 	}
 	return isAdmin
 }
+
+func (h *Handler) userIsModerator(ctx *gin.Context) bool {
+	token, err := getToken(ctx)
+	if err != nil {
+		errorResponse(ctx, unknownError, http.StatusInternalServerError)
+		logrus.Error(err)
+		return false
+	}
+	isModerator, err := h.services.Roles.UserIsModerator(token)
+	if err != nil {
+		errorResponse(ctx, unknownError, http.StatusInternalServerError)
+		logrus.Error(err)
+		return false
+	}
+	return isModerator
+}
