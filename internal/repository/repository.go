@@ -9,6 +9,8 @@ import (
 type Roles interface {
 	NewAdmin(token, description string) error
 	NewModerator(token, description string) error
+	UserIsAdmin(token string) (bool, error)
+	UserIsModerator(token string) (bool, error)
 }
 
 type Courses interface {

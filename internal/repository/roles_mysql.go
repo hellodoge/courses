@@ -5,6 +5,8 @@ import "github.com/jmoiron/sqlx"
 const (
 	mySqlCreateAdmin     = "create_admin_token.sql"
 	mySqlCreateModerator = "create_moderator_token.sql"
+	mySqlUserIsAdmin     = "user_is_admin.sql"
+	mySqlUserIsModerator = "user_is_moderator.sql"
 )
 
 type RolesMySQL struct {
@@ -31,4 +33,24 @@ func (r *RolesMySQL) NewModerator(token, description string) error {
 	}
 	_, err = r.db.Exec(createModeratorQuery, token, description)
 	return err
+}
+
+func (r *RolesMySQL) UserIsAdmin(token string) (bool, error) {
+	userIsAdminQuery, err := getQuery(mySqlQueriesFolder, mySqlUserIsAdmin)
+	if err != nil {
+		return false, err
+	}
+	var result bool
+	err = r.db.Get(&result, userIsAdminQuery, token)
+	return result, err
+}
+
+func (r *RolesMySQL) UserIsModerator(token string) (bool, error) {
+	userIsModeratorQuery, err := getQuery(mySqlQueriesFolder, mySqlUserIsModerator)
+	if err != nil {
+		return false, err
+	}
+	var result bool
+	err = r.db.Get(&result, userIsModeratorQuery, token)
+	return result, err
 }
