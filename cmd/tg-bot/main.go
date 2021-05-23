@@ -61,6 +61,6 @@ func main() {
 
 func initConfig() error {
 	viper.AddConfigPath("configs")
-	viper.SetConfigName("config")
+	viper.SetConfigName("telegram")
 	return viper.ReadInConfig()
 }
