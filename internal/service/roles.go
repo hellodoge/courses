@@ -30,3 +30,11 @@ func (r *RolesService) NewModerator(description string) (string, error) {
 	err = r.repo.NewModerator(tok, description)
 	return tok, err
 }
+
+func (r *RolesService) UserIsAdmin(token string) (bool, error) {
+	return r.repo.UserIsAdmin(token)
+}
+
+func (r *RolesService) UserIsModerator(token string) (bool, error) {
+	return r.repo.UserIsModerator(token)
+}

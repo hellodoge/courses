@@ -8,6 +8,8 @@ import (
 type Roles interface {
 	NewAdmin(description string) (string, error)
 	NewModerator(description string) (string, error)
+	UserIsAdmin(token string) (bool, error)
+	UserIsModerator(token string) (bool, error)
 }
 
 type Courses interface {
