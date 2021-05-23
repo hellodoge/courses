@@ -19,7 +19,7 @@ func main() {
 		log.Println("error while loading .env file:", err)
 	}
 
-	db, err := sqlx.Connect("mysql", os.Getenv("DB_DATA_SOURCE_NAME_MYSQL"))
+	db, err := sqlx.Connect("mysql", os.Getenv("DB_URI_MYSQL"))
 	if err != nil {
 		log.Fatalln("error while connecting to database:", err)
 	}
