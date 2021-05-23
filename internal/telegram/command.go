@@ -2,6 +2,7 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/hellodoge/courses-tg-bot/courses"
 	predefinedMessages "github.com/hellodoge/courses-tg-bot/courses/messages"
 	"github.com/hellodoge/courses-tg-bot/internal/telegram/messages"
 	"github.com/sirupsen/logrus"
@@ -60,9 +61,19 @@ func (b *Bot) handleCommandNew(command *tgbotapi.Message) error {
 		return err
 	}
 
-	message := tgbotapi.NewMessage(command.Chat.ID, command.CommandArguments()) //TODO
-	_, err = b.bot.Send(message)
-	return err
+	var course = courses.Course{
+		Title: command.CommandArguments(),
+	}
+
+	id, err := b.service.Courses.NewCourse(&course)
+	if err != nil {
+		if err := b.ReplyWithText(command.Chat.ID, command.MessageID, err.Error()); err != nil {
+			return err
+		}
+		return err
+	}
+
+	return b.ReplyWithText(command.Chat.ID, command.MessageID, id)
 }
 
 func (b *Bot) handleCommandAddModerator(command *tgbotapi.Message) error {
