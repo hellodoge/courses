@@ -20,8 +20,6 @@ func (r *CoursesMongoDB) writeLessons(ctx context.Context, lessons []courses.Les
 			NextLessonID: nextLessonID,
 			Title:        lesson.Title,
 			Description:  lesson.Description,
-			Videos:       lesson.Videos,
-			Photos:       lesson.Photos,
 			Documents:    lesson.Documents,
 		}
 		id, err := collection.InsertOne(ctx, lessonMongo)
@@ -52,8 +50,6 @@ func (r *CoursesMongoDB) GetLesson(idHex string) (*courses.Lesson, error) {
 		ID:          idHex,
 		Title:       lessonMDB.Title,
 		Description: lessonMDB.Description,
-		Photos:      lessonMDB.Photos,
-		Videos:      lessonMDB.Videos,
 		Documents:   lessonMDB.Documents,
 	}
 	if !lessonMDB.NextLessonID.IsZero() {

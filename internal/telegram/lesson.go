@@ -7,6 +7,7 @@ import (
 	"github.com/hellodoge/courses-tg-bot/courses"
 	"github.com/hellodoge/courses-tg-bot/courses/messages"
 	"github.com/hellodoge/courses-tg-bot/internal/telegram/callback"
+	"github.com/sirupsen/logrus"
 )
 
 func (b *Bot) sendLesson(chatID int64, lesson *courses.Lesson) error {
@@ -19,32 +20,28 @@ func (b *Bot) sendLesson(chatID int64, lesson *courses.Lesson) error {
 		messageList = append(messageList, &message)
 		lastMessageBase = &message.BaseChat
 	}
-	for _, photo := range lesson.Photos {
-		if shortcut, ok := photo.URLs.Shortcuts[courses.TelegramShortcut]; ok {
-			message := tgbotapi.NewPhotoShare(chatID, shortcut)
-			message.Caption = photo.Description
-			messageList = append(messageList, &message)
-			lastMessageBase = &message.BaseChat
-		} else {
-			return errors.New("sendLesson: load files from url not implemented yet")
-		}
-	}
-	for _, video := range lesson.Videos {
-		if shortcut, ok := video.URLs.Shortcuts[courses.TelegramShortcut]; ok {
-			message := tgbotapi.NewVideoShare(chatID, shortcut)
-			message.Caption = video.Description
-			messageList = append(messageList, &message)
-			lastMessageBase = &message.BaseChat
-		} else {
-			return errors.New("sendLesson: load files from url not implemented yet")
-		}
-	}
 	for _, document := range lesson.Documents {
 		if shortcut, ok := document.URLs.Shortcuts[courses.TelegramShortcut]; ok {
-			message := tgbotapi.NewDocumentShare(chatID, shortcut)
-			message.Caption = document.Description
-			messageList = append(messageList, &message)
-			lastMessageBase = &message.BaseChat
+			switch document.Type {
+			case courses.TypeDocument:
+				message := tgbotapi.NewDocumentShare(chatID, shortcut)
+				message.Caption = document.Description
+				messageList = append(messageList, &message)
+				lastMessageBase = &message.BaseChat
+			case courses.TypePhoto:
+				message := tgbotapi.NewPhotoShare(chatID, shortcut)
+				message.Caption = document.Description
+				messageList = append(messageList, &message)
+				lastMessageBase = &message.BaseChat
+			case courses.TypeVideo:
+				message := tgbotapi.NewVideoShare(chatID, shortcut)
+				message.Caption = document.Description
+				messageList = append(messageList, &message)
+				lastMessageBase = &message.BaseChat
+			default:
+				logrus.Errorf("sendLesson: unknown document type: %s (lesson id: %s)", document.Type, lesson.ID)
+				continue
+			}
 		} else {
 			return errors.New("sendLesson: load files from url not implemented yet")
 		}

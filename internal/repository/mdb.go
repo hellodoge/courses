@@ -12,11 +12,11 @@ const (
 )
 
 type CourseMongoDB struct {
-	ID          primitive.ObjectID  `bson:"_id,omitempty"`
-	Title       string              `bson:"title"`
-	Description string              `bson:"description,omitempty"`
-	Photo       *courses.Photo      `bson:"photo,omitempty"`
-	Lessons     []LessonInfoMongoDB `bson:"lessons"`
+	ID          primitive.ObjectID     `bson:"_id,omitempty"`
+	Title       string                 `bson:"title"`
+	Description string                 `bson:"description,omitempty"`
+	Photo       *courses.URLCollection `bson:"photo,omitempty"`
+	Lessons     []LessonInfoMongoDB    `bson:"lessons"`
 }
 
 type LessonInfoMongoDB struct {
@@ -29,7 +29,5 @@ type LessonMongoDB struct {
 	NextLessonID primitive.ObjectID `bson:"next_id,omitempty"`
 	Title        string             `bson:"title,omitempty"`
 	Description  string             `bson:"description,omitempty"`
-	Videos       []courses.Video    `bson:"videos,omitempty"`
-	Photos       []courses.Photo    `bson:"photos,omitempty"`
 	Documents    []courses.Document `bson:"documents,omitempty"`
 }

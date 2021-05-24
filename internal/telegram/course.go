@@ -16,7 +16,7 @@ func (b *Bot) sendCourseDescription(chatID int64, course *courses.Course) error 
 	)
 	var description = fmt.Sprintf("%s\n\n%s", course.Title, course.Description)
 	if course.Preview != nil {
-		if shortcut, ok := course.Preview.URLs.Shortcuts[courses.TelegramShortcut]; ok {
+		if shortcut, ok := course.Preview.Shortcuts[courses.TelegramShortcut]; ok {
 			msg := tgbotapi.NewPhotoShare(chatID, shortcut)
 			msg.Caption = description
 			base = &msg.BaseChat
