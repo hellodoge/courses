@@ -5,6 +5,11 @@ import (
 )
 
 func (b *Bot) handleUpdate(update tgbotapi.Update) error {
+
+	if update.CallbackQuery != nil {
+		return b.handleCallback(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery)
+	}
+
 	if update.Message == nil {
 		return nil
 	}
