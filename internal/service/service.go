@@ -15,6 +15,7 @@ type Roles interface {
 type Courses interface {
 	NewCourse(course *courses.Course) (string, error)
 	GetCourse(id string) (*courses.Course, error)
+	GetLesson(id string) (*courses.Lesson, error)
 }
 
 type Service struct {

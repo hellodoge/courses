@@ -20,3 +20,7 @@ func (s *CoursesService) NewCourse(course *courses.Course) (string, error) {
 func (s *CoursesService) GetCourse(id string) (*courses.Course, error) {
 	return s.repo.GetCourse(id)
 }
+
+func (s *CoursesService) GetLesson(id string) (*courses.Lesson, error) {
+	return s.repo.GetLesson(id)
+}
