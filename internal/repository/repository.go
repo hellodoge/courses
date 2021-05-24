@@ -16,6 +16,7 @@ type Roles interface {
 type Courses interface {
 	NewCourse(course *courses.Course) (string, error)
 	GetCourse(id string) (*courses.Course, error)
+	GetLesson(idHex string) (*courses.Lesson, error)
 }
 
 type Repository struct {
