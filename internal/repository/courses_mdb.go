@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hellodoge/courses-tg-bot/courses"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -52,4 +53,30 @@ func (r *CoursesMongoDB) NewCourse(course *courses.Course) (string, error) {
 		return ctx.CommitTransaction(ctx)
 	})
 	return id, err
+}
+
+func (r *CoursesMongoDB) GetCourse(idHex string) (*courses.Course, error) {
+	id, err := primitive.ObjectIDFromHex(idHex)
+	if err != nil {
+		return nil, nil
+	}
+	collection := r.db.Collection(coursesCollectionMongoDB)
+	var courseMDB CourseMongoDB
+	err = collection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&courseMDB)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	var lessons = make([]courses.Lesson, 0, len(courseMDB.Lessons))
+	for _, lessonMDB := range courseMDB.Lessons {
+		lessons = append(lessons, courses.Lesson{ID: lessonMDB.ID.Hex()})
+	}
+	var course = &courses.Course{
+		ID:          idHex,
+		Title:       courseMDB.Title,
+		Description: courseMDB.Description,
+		Lessons:     lessons,
+	}
+	return course, nil
 }
