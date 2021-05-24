@@ -12,6 +12,7 @@ const (
 	authCommand         = "auth"
 	newCommand          = "new"
 	addModeratorCommand = "moder"
+	getCourseCommand    = "course"
 )
 
 func (b *Bot) handleCommand(command *tgbotapi.Message) error {
@@ -24,6 +25,8 @@ func (b *Bot) handleCommand(command *tgbotapi.Message) error {
 		return b.handleCommandNew(command)
 	case addModeratorCommand:
 		return b.handleCommandAddModerator(command)
+	case getCourseCommand:
+		return b.handleCommandGetCourse(command)
 	default:
 		unknownCommandMessage := tgbotapi.NewMessage(command.Chat.ID, predefinedMessages.UnknownCommand)
 		_, err := b.bot.Send(unknownCommandMessage)
@@ -92,4 +95,15 @@ func (b *Bot) handleCommandAddModerator(command *tgbotapi.Message) error {
 	}
 
 	return b.ReplyWithText(command.Chat.ID, command.MessageID, token)
+}
+
+func (b *Bot) handleCommandGetCourse(command *tgbotapi.Message) error {
+	course, err := b.service.GetCourse(command.CommandArguments())
+	if err != nil {
+		return err
+	}
+	if course == nil {
+		return b.ReplyWithText(command.Chat.ID, command.MessageID, predefinedMessages.InvalidCourseID)
+	}
+	return b.SendCourseDescription(command.Chat.ID, course)
 }
