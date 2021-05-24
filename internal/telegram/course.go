@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"errors"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/hellodoge/courses-tg-bot/courses"
@@ -9,8 +10,26 @@ import (
 )
 
 func (b *Bot) SendCourseDescription(chatID int64, course *courses.Course) error {
+	var (
+		message tgbotapi.Chattable
+		base    *tgbotapi.BaseChat
+	)
 	var description = fmt.Sprintf("%s\n\n%s", course.Title, course.Description)
-	message := tgbotapi.NewMessage(chatID, description)
+	if course.Preview != nil {
+		if shortcut, ok := course.Preview.URLs.Shortcuts[courses.TelegramShortcut]; ok {
+			msg := tgbotapi.NewPhotoShare(chatID, shortcut)
+			msg.Caption = description
+			base = &msg.BaseChat
+			message = &msg
+		} else {
+			return errors.New("sendCourseDescription: loading photo into telegram not implemented yet")
+		}
+	} else {
+		msg := tgbotapi.NewMessage(chatID, description)
+		base = &msg.BaseChat
+		message = &msg
+	}
+
 	if course.Lessons != nil && len(course.Lessons) > 0 {
 		keyboard, err := NewKeyboard(
 			callbackButton{
@@ -31,7 +50,7 @@ func (b *Bot) SendCourseDescription(chatID int64, course *courses.Course) error 
 		if err != nil {
 			return err
 		}
-		message.ReplyMarkup = keyboard
+		base.ReplyMarkup = keyboard
 	}
 	_, err := b.bot.Send(message)
 	return err
