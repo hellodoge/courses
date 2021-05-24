@@ -4,6 +4,7 @@ type Course struct {
 	ID          string   `json:"id"`
 	Title       string   `json:"title" binding:"required"`
 	Description string   `json:"description,omitempty"`
+	Preview     *Photo   `json:"photo,omitempty"`
 	Lessons     []Lesson `json:"lessons"`
 }
 

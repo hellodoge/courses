@@ -39,6 +39,7 @@ func (r *CoursesMongoDB) NewCourse(course *courses.Course) (string, error) {
 		var courseMongo = CourseMongoDB{
 			Title:       course.Title,
 			Description: course.Description,
+			Photo:       course.Preview,
 			Lessons:     lessons,
 		}
 		coursesCollection := r.db.Collection(coursesCollectionMongoDB)
@@ -76,6 +77,7 @@ func (r *CoursesMongoDB) GetCourse(idHex string) (*courses.Course, error) {
 		ID:          idHex,
 		Title:       courseMDB.Title,
 		Description: courseMDB.Description,
+		Preview:     courseMDB.Photo,
 		Lessons:     lessons,
 	}
 	return course, nil

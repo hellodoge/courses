@@ -15,6 +15,7 @@ type CourseMongoDB struct {
 	ID          primitive.ObjectID  `bson:"_id,omitempty"`
 	Title       string              `bson:"title"`
 	Description string              `bson:"description,omitempty"`
+	Photo       *courses.Photo      `bson:"photo,omitempty"`
 	Lessons     []LessonInfoMongoDB `bson:"lessons"`
 }
 
