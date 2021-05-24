@@ -16,3 +16,7 @@ func NewCoursesService(repo repository.Courses) *CoursesService {
 func (s *CoursesService) NewCourse(course *courses.Course) (string, error) {
 	return s.repo.NewCourse(course)
 }
+
+func (s *CoursesService) GetCourse(id string) (*courses.Course, error) {
+	return s.repo.GetCourse(id)
+}
