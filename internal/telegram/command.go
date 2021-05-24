@@ -105,5 +105,5 @@ func (b *Bot) handleCommandGetCourse(command *tgbotapi.Message) error {
 	if course == nil {
 		return b.ReplyWithText(command.Chat.ID, command.MessageID, predefinedMessages.InvalidCourseID)
 	}
-	return b.SendCourseDescription(command.Chat.ID, course)
+	return b.sendCourseDescription(command.Chat.ID, course)
 }

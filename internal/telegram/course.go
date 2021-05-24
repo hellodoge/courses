@@ -9,7 +9,7 @@ import (
 	"github.com/hellodoge/courses-tg-bot/internal/telegram/callback"
 )
 
-func (b *Bot) SendCourseDescription(chatID int64, course *courses.Course) error {
+func (b *Bot) sendCourseDescription(chatID int64, course *courses.Course) error {
 	var (
 		message tgbotapi.Chattable
 		base    *tgbotapi.BaseChat
