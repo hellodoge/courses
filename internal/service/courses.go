@@ -4,6 +4,7 @@ import (
 	"github.com/hellodoge/courses-tg-bot/courses"
 	"github.com/hellodoge/courses-tg-bot/courses/messages"
 	"github.com/hellodoge/courses-tg-bot/internal/repository"
+	"strings"
 )
 
 type CoursesService struct {
@@ -15,6 +16,7 @@ func NewCoursesService(repo repository.Courses) *CoursesService {
 }
 
 func (s *CoursesService) NewCourse(course *courses.Course) (string, error) {
+	course.Title = strings.TrimSpace(course.Title)
 	if course.Title == "" {
 		return "", Error{
 			userError: messages.CourseTitleCannotBeEmpty,
