@@ -71,7 +71,10 @@ func (r *CoursesMongoDB) GetCourse(idHex string) (*courses.Course, error) {
 	}
 	var lessons = make([]courses.Lesson, 0, len(courseMDB.Lessons))
 	for _, lessonMDB := range courseMDB.Lessons {
-		lessons = append(lessons, courses.Lesson{ID: lessonMDB.ID.Hex()})
+		lessons = append(lessons, courses.Lesson{
+			ID:    lessonMDB.ID.Hex(),
+			Title: lessonMDB.Title,
+		})
 	}
 	var course = &courses.Course{
 		ID:          idHex,
