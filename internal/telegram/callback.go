@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/hellodoge/courses-tg-bot/courses/messages"
 	"github.com/hellodoge/courses-tg-bot/internal/telegram/callback"
 	"github.com/sirupsen/logrus"
+	"strings"
 )
 
 type callbackButton struct {
@@ -36,7 +38,9 @@ func (b *Bot) handleCallback(chatID int64, callbackQuery *tgbotapi.CallbackQuery
 	switch query.Action {
 	case callback.ActionGetLesson:
 		return b.handleCallbackGetLesson(chatID, query.ID)
-	case callback.ActionGetCourseLessons, callback.ActionGetCourseDescription:
+	case callback.ActionGetCourseLessons:
+		return b.handleCallbackGetLessons(chatID, query.ID)
+	case callback.ActionGetCourseDescription:
 		return fmt.Errorf("handleCallback: callback %s not implemented yet", query.Action)
 	default:
 		return nil
@@ -51,4 +55,35 @@ func (b *Bot) handleCallbackGetLesson(chatID int64, lessonID string) error {
 		return nil
 	}
 	return b.sendLesson(chatID, lesson)
+}
+
+func (b *Bot) handleCallbackGetLessons(chatID int64, courseID string) error {
+	course, err := b.service.GetCourse(courseID)
+	if err != nil {
+		return err
+	}
+	message := tgbotapi.NewMessage(chatID, course.Title)
+	var buttons = make([]callbackButton, 0, len(course.Lessons))
+	for i, lesson := range course.Lessons {
+		var title string
+		if strings.TrimSpace(lesson.Title) == "" {
+			title = fmt.Sprintf(messages.LessonNTemplate, i+1)
+		} else {
+			title = lesson.Title
+		}
+		var button = callbackButton{
+			text: title,
+			query: callback.Query{
+				Action: callback.ActionGetLesson,
+				ID:     lesson.ID,
+			},
+		}
+		buttons = append(buttons, button)
+	}
+	message.ReplyMarkup, err = NewKeyboard(buttons...)
+	if err != nil {
+		return err
+	}
+	_, err = b.bot.Send(message)
+	return err
 }
