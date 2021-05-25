@@ -15,6 +15,11 @@ func NewCoursesService(repo repository.Courses) *CoursesService {
 }
 
 func (s *CoursesService) NewCourse(course *courses.Course) (string, error) {
+	if course.Title == "" {
+		return "", Error{
+			userError: messages.CourseTitleCannotBeEmpty,
+		}
+	}
 	return s.repo.NewCourse(course)
 }
 
