@@ -49,7 +49,9 @@ func main() {
 		logrus.Fatal("error initializing bot: ", err)
 	}
 
-	tg := telegram.NewBot(bot, services)
+	tg := telegram.NewBot(bot, services, telegram.Config{
+		SearchMaxResults: viper.GetInt64("search.max-results"),
+	})
 
 	channel, err := tg.InitUpdateChannel()
 	if err != nil {
@@ -60,6 +62,8 @@ func main() {
 }
 
 func initConfig() error {
+	viper.SetDefault("search.max-results", 6)
+
 	viper.AddConfigPath("configs")
 	viper.SetConfigName("telegram")
 	return viper.ReadInConfig()

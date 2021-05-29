@@ -9,12 +9,18 @@ import (
 type Bot struct {
 	bot     *tgbotapi.BotAPI
 	service *service.Service
+	config  Config
 }
 
-func NewBot(bot *tgbotapi.BotAPI, service *service.Service) *Bot {
+type Config struct {
+	SearchMaxResults int64
+}
+
+func NewBot(bot *tgbotapi.BotAPI, service *service.Service, config Config) *Bot {
 	return &Bot{
 		bot:     bot,
 		service: service,
+		config:  config,
 	}
 }
 

@@ -1,9 +1,10 @@
 package callback
 
 const (
-	ActionGetCourseDescription = "get_course_description"
-	ActionGetCourseLessons     = "get_course_lessons"
-	ActionGetLesson            = "get_lesson"
+	ActionGetCourseDescription = "course_description"
+	ActionGetCourseLessons     = "course_lessons"
+	ActionGetLesson            = "lesson"
+	ActionSearch               = "search"
 )
 
 type Query struct {

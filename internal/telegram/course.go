@@ -7,6 +7,7 @@ import (
 	"github.com/hellodoge/courses-tg-bot/courses"
 	"github.com/hellodoge/courses-tg-bot/courses/messages"
 	"github.com/hellodoge/courses-tg-bot/internal/telegram/callback"
+	"github.com/sirupsen/logrus"
 )
 
 func (b *Bot) sendCourseDescription(chatID int64, course *courses.Course) error {
@@ -53,5 +54,42 @@ func (b *Bot) sendCourseDescription(chatID int64, course *courses.Course) error 
 		base.ReplyMarkup = keyboard
 	}
 	_, err := b.bot.Send(message)
+	return err
+}
+
+func (b *Bot) sendSearchResults(chatID int64, courseList []courses.Course, searchID string) error {
+	var buttons []callbackButton
+	for _, current := range courseList {
+		if current.Title == "" {
+			logrus.Errorf("Course %s title is empty, skipping", current.ID)
+			continue
+		}
+		buttons = append(buttons, callbackButton{
+			text: current.Title,
+			query: callback.Query{
+				Action: callback.ActionGetCourseDescription,
+				ID:     current.ID,
+			},
+		})
+	}
+	if len(buttons) == 0 {
+		return b.SendText(chatID, messages.NoMoreSearchResult)
+	}
+	if int64(len(courseList)) == b.config.SearchMaxResults && searchID != "" {
+		buttons = append(buttons, callbackButton{
+			text: messages.MoreResults,
+			query: callback.Query{
+				Action: callback.ActionSearch,
+				ID:     searchID,
+			},
+		})
+	}
+	keyboard, err := NewKeyboard(buttons...)
+	if err != nil {
+		return err
+	}
+	message := tgbotapi.NewMessage(chatID, messages.SearchResults)
+	message.ReplyMarkup = keyboard
+	_, err = b.bot.Send(message)
 	return err
 }

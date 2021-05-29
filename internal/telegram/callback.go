@@ -5,6 +5,7 @@ import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/hellodoge/courses-tg-bot/courses/messages"
+	"github.com/hellodoge/courses-tg-bot/internal/service"
 	"github.com/hellodoge/courses-tg-bot/internal/telegram/callback"
 	"github.com/sirupsen/logrus"
 	"strings"
@@ -42,6 +43,8 @@ func (b *Bot) handleCallback(chatID int64, callbackQuery *tgbotapi.CallbackQuery
 		return b.handleCallbackGetLessons(chatID, query.ID)
 	case callback.ActionGetCourseDescription:
 		return fmt.Errorf("handleCallback: callback %s not implemented yet", query.Action)
+	case callback.ActionSearch:
+		return b.handleCallbackSearch(chatID, query.ID)
 	default:
 		return nil
 	}
@@ -86,4 +89,13 @@ func (b *Bot) handleCallbackGetLessons(chatID int64, courseID string) error {
 	}
 	_, err = b.bot.Send(message)
 	return err
+}
+
+func (b *Bot) handleCallbackSearch(chatID int64, searchID string) error {
+	courseList, err := b.service.SearchCoursesBySearchID(searchID, b.config.SearchMaxResults)
+	if err != nil {
+		logrus.Info("Error! ", err.(service.Error).Log())
+		return err
+	}
+	return b.sendSearchResults(chatID, courseList, searchID)
 }
