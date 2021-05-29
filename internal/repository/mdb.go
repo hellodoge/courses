@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	databaseMongoDB          = "courses"
-	coursesCollectionMongoDB = "courses"
-	lessonsCollectionMongoDB = "lessons"
+	databaseMongoDB           = "courses"
+	coursesCollectionMongoDB  = "courses"
+	lessonsCollectionMongoDB  = "lessons"
+	searchesCollectionMongoDB = "searches"
 )
 
 type CourseMongoDB struct {

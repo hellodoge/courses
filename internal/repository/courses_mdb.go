@@ -15,10 +15,11 @@ type CoursesMongoDB struct {
 }
 
 func NewCoursesMongoDB(client *mongo.Client) *CoursesMongoDB {
-	return &CoursesMongoDB{
+	repo := &CoursesMongoDB{
 		client: client,
 		db:     client.Database(databaseMongoDB),
 	}
+	return repo
 }
 
 func (r *CoursesMongoDB) NewCourse(course *courses.Course) (string, error) {
