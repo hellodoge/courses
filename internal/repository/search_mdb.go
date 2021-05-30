@@ -28,8 +28,11 @@ func (r *CoursesMongoDB) SearchCourses(query string) ([]courses.Course, error) {
 			"$search": query,
 		},
 	}, &options.FindOptions{
-		Limit: &limit,
-		Skip:  &skip,
+		Sort: bson.M{
+			"score": bson.M{
+				"$meta": "textScore",
+			},
+		},
 	})
 	if err != nil {
 		return nil, err
