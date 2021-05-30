@@ -2,18 +2,24 @@ package cached
 
 import (
 	"io/ioutil"
+	"sync"
 	"time"
 )
 
-type Cache map[string]cached
+type Cache struct {
+	cached map[string]cached
+	mutex  sync.Mutex
+}
 
 type cached struct {
 	cachedAt time.Time
-	file string
+	file     string
 }
 
-func (c Cache) Load(path string, lifetime time.Duration) (string, error) {
-	if cached, ok := c[path]; ok {
+func (c *Cache) Load(path string, lifetime time.Duration) (string, error) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	if cached, ok := c.cached[path]; ok {
 		if cached.cachedAt.Add(lifetime).After(time.Now()) {
 			return cached.file, nil
 		}
@@ -24,7 +30,7 @@ func (c Cache) Load(path string, lifetime time.Duration) (string, error) {
 		return "", err
 	}
 
-	c[path] = cached{
+	c.cached[path] = cached{
 		cachedAt: time.Now(),
 		file:     string(file),
 	}
