@@ -7,3 +7,6 @@ db:
 
 search:
   max-results: 4
+
+workers: 16
+queue-size: 128

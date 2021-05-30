@@ -13,7 +13,9 @@ type Bot struct {
 }
 
 type Config struct {
-	SearchMaxResults int64
+	SearchMaxResults     int64
+	NumberOfWorkers      int
+	MaxQueuedConnections int
 }
 
 func NewBot(bot *tgbotapi.BotAPI, service *service.Service, config Config) *Bot {
@@ -31,7 +33,17 @@ func (b *Bot) InitUpdateChannel() (tgbotapi.UpdatesChannel, error) {
 }
 
 func (b *Bot) HandleUpdates(updates tgbotapi.UpdatesChannel) {
+	var updatesQueue = make(chan tgbotapi.Update, b.config.MaxQueuedConnections)
+	for i := 0; i < b.config.NumberOfWorkers; i++ {
+		go b.worker(updatesQueue)
+	}
 	for update := range updates {
+		updatesQueue <- update
+	}
+}
+
+func (b *Bot) worker(queue <-chan tgbotapi.Update) {
+	for update := range queue {
 		err := b.handleUpdate(update)
 		if serviceErr, ok := err.(service.Error); ok {
 			b.HandleServiceErrors(serviceErr, update)

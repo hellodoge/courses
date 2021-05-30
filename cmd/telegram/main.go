@@ -50,7 +50,9 @@ func main() {
 	}
 
 	tg := telegram.NewBot(bot, services, telegram.Config{
-		SearchMaxResults: viper.GetInt64("search.max-results"),
+		SearchMaxResults:     viper.GetInt64("search.max-results"),
+		NumberOfWorkers:      viper.GetInt("queue-size"),
+		MaxQueuedConnections: viper.GetInt("workers"),
 	})
 
 	channel, err := tg.InitUpdateChannel()
@@ -63,6 +65,8 @@ func main() {
 
 func initConfig() error {
 	viper.SetDefault("search.max-results", 6)
+	viper.SetDefault("queue-size", 1024)
+	viper.SetDefault("workers", 128)
 
 	viper.AddConfigPath("configs")
 	viper.SetConfigName("telegram")
