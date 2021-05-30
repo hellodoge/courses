@@ -91,7 +91,7 @@ func (b *Bot) handleCallbackGetLessons(chatID int64, courseID string) error {
 }
 
 func (b *Bot) handleCallbackSearch(chatID int64, searchID string) error {
-	courseList, err := b.service.SearchCoursesBySearchID(searchID, b.config.SearchMaxResults)
+	courseList, err := b.service.GetMoreSearchResults(searchID, b.config.SearchMaxResults)
 	if err != nil {
 		return err
 	}

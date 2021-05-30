@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/hellodoge/courses-tg-bot/courses"
+	"github.com/hellodoge/courses-tg-bot/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,11 +15,12 @@ const (
 )
 
 type searchMongoDB struct {
-	Query string `bson:"query"`
-	Skip  int64  `bson:"skip"`
+	Query   string           `bson:"query"`
+	Skip    int64            `bson:"skip"`
+	Results []courses.Course `bson:"results"`
 }
 
-func (r *CoursesMongoDB) SearchCourses(query string, limit, skip int64) ([]courses.Course, error) {
+func (r *CoursesMongoDB) SearchCourses(query string) ([]courses.Course, error) {
 	collection := r.db.Collection(coursesCollectionMongoDB)
 	var coursesMDB []CourseMongoDB
 	cursor, err := collection.Find(context.Background(), bson.M{
@@ -46,7 +48,7 @@ func (r *CoursesMongoDB) SearchCourses(query string, limit, skip int64) ([]cours
 	return result, nil
 }
 
-func (r *CoursesMongoDB) SearchCoursesBySearchID(searchID string, limit int64) ([]courses.Course, error) {
+func (r *CoursesMongoDB) GetMoreSearchResults(searchID string, limit int64) ([]courses.Course, error) {
 	collection := r.db.Collection(searchesCollectionMongoDB)
 	var search searchMongoDB
 	id, err := primitive.ObjectIDFromHex(searchID)
@@ -59,18 +61,18 @@ func (r *CoursesMongoDB) SearchCoursesBySearchID(searchID string, limit int64) (
 	).Decode(&search)
 	if err == mongo.ErrNoDocuments {
 		return nil, ErrorInvalidSearchID
-	} else if err != nil {
-		return nil, err
 	}
-	result, err := r.SearchCourses(search.Query, limit, search.Skip)
-	return result, err
+	from := util.MinInt64(search.Skip, int64(len(search.Results)-1))
+	to := util.MinInt64(search.Skip+limit, int64(len(search.Results)))
+	return search.Results[from:to], err
 }
 
-func (r *CoursesMongoDB) NewSearch(query string, skip int64) (string, error) {
+func (r *CoursesMongoDB) NewSearch(query string, results []courses.Course, skip int64) (string, error) {
 	collection := r.db.Collection(searchesCollectionMongoDB)
 	var search = searchMongoDB{
-		Query: query,
-		Skip:  skip,
+		Query:   query,
+		Skip:    skip,
+		Results: results,
 	}
 	id, err := collection.InsertOne(context.Background(), search)
 	if err != nil {

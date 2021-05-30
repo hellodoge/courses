@@ -14,9 +14,9 @@ type Roles interface {
 }
 
 type Courses interface {
-	SearchCourses(query string, limit, skip int64) ([]courses.Course, error)
-	SearchCoursesBySearchID(searchID string, limit int64) ([]courses.Course, error)
-	NewSearch(query string, skip int64) (string, error)
+	SearchCourses(query string) ([]courses.Course, error)
+	GetMoreSearchResults(searchID string, limit int64) ([]courses.Course, error)
+	NewSearch(query string, results []courses.Course, skip int64) (string, error)
 	NewCourse(course *courses.Course) (string, error)
 	GetCourse(id string) (*courses.Course, error)
 	GetLesson(idHex string) (*courses.Lesson, error)

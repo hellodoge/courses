@@ -49,17 +49,17 @@ func (s *CoursesService) GetLesson(id string) (*courses.Lesson, error) {
 	return lesson, nil
 }
 
-func (s *CoursesService) SearchCourses(query string, limit, offset int64) ([]courses.Course, error) {
+func (s *CoursesService) SearchCourses(query string) ([]courses.Course, error) {
 	if query == "" {
 		return nil, Error{
 			userError: messages.SearchQueryCannotBeEmpty,
 		}
 	}
-	return s.repo.SearchCourses(query, limit, offset)
+	return s.repo.SearchCourses(query)
 }
 
-func (s *CoursesService) SearchCoursesBySearchID(searchID string, limit int64) ([]courses.Course, error) {
-	result, err := s.repo.SearchCoursesBySearchID(searchID, limit)
+func (s *CoursesService) GetMoreSearchResults(searchID string, limit int64) ([]courses.Course, error) {
+	result, err := s.repo.GetMoreSearchResults(searchID, limit)
 	if err == repository.ErrorInvalidSearchID {
 		return nil, Error{
 			userError: messages.InvalidSearchID,
@@ -68,11 +68,6 @@ func (s *CoursesService) SearchCoursesBySearchID(searchID string, limit int64) (
 	return result, err
 }
 
-func (s *CoursesService) NewSearch(query string, offset int64) (string, error) {
-	if query == "" {
-		return "", Error{
-			userError: messages.SearchQueryCannotBeEmpty,
-		}
-	}
-	return s.repo.NewSearch(query, offset)
+func (s *CoursesService) NewSearch(query string, results []courses.Course, offset int64) (string, error) {
+	return s.repo.NewSearch(query, results, offset)
 }
