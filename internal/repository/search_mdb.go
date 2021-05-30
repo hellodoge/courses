@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"github.com/hellodoge/courses-tg-bot/courses"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -59,7 +58,6 @@ func (r *CoursesMongoDB) SearchCoursesBySearchID(searchID string, limit int64) (
 		bson.M{"$inc": bson.M{searchMongoFieldSkip: limit}},
 	).Decode(&search)
 	if err == mongo.ErrNoDocuments {
-		logrus.Error(searchID, limit, "???")
 		return nil, ErrorInvalidSearchID
 	} else if err != nil {
 		return nil, err
