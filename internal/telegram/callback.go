@@ -41,7 +41,7 @@ func (b *Bot) handleCallback(chatID int64, callbackQuery *tgbotapi.CallbackQuery
 	case callback.ActionGetCourseLessons:
 		return b.handleCallbackGetLessons(chatID, query.ID)
 	case callback.ActionGetCourseDescription:
-		return fmt.Errorf("handleCallback: callback %s not implemented yet", query.Action)
+		return b.handleCallbackGetCourseDescription(chatID, query.ID)
 	case callback.ActionSearch:
 		return b.handleCallbackSearch(chatID, query.ID)
 	default:
@@ -96,4 +96,15 @@ func (b *Bot) handleCallbackSearch(chatID int64, searchID string) error {
 		return err
 	}
 	return b.sendSearchResults(chatID, courseList, searchID)
+}
+
+func (b *Bot) handleCallbackGetCourseDescription(chatID int64, courseID string) error {
+	course, err := b.service.GetCourse(courseID)
+	if err != nil {
+		return err
+	}
+	if course == nil {
+		return b.SendText(chatID, messages.InvalidCourseID)
+	}
+	return b.sendCourseDescription(chatID, course)
 }
