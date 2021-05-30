@@ -5,7 +5,6 @@ import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/hellodoge/courses-tg-bot/courses/messages"
-	"github.com/hellodoge/courses-tg-bot/internal/service"
 	"github.com/hellodoge/courses-tg-bot/internal/telegram/callback"
 	"github.com/sirupsen/logrus"
 	"strings"
@@ -94,7 +93,6 @@ func (b *Bot) handleCallbackGetLessons(chatID int64, courseID string) error {
 func (b *Bot) handleCallbackSearch(chatID int64, searchID string) error {
 	courseList, err := b.service.SearchCoursesBySearchID(searchID, b.config.SearchMaxResults)
 	if err != nil {
-		logrus.Info("Error! ", err.(service.Error).Log())
 		return err
 	}
 	return b.sendSearchResults(chatID, courseList, searchID)
